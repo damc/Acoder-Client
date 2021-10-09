@@ -1,0 +1,6 @@
+.idea
+client.egg-info
+build
+dist
+logs.log
+task.md
