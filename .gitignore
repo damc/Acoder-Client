@@ -4,3 +4,4 @@ build
 dist
 logs.log
 task.md
+*__pycache__*
