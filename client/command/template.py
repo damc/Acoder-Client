@@ -8,6 +8,7 @@ from ..helper.files import content, write
 def template(file_path: str):
     """Generate template file for task description
 
+    \b
     Args:
         file_path(str): Path to task file
     """

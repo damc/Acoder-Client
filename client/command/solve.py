@@ -1,5 +1,6 @@
 from difflib import unified_diff
 from os import remove
+from os.path import exists
 from typing import List
 
 from click import argument, command, echo, prompt
@@ -7,30 +8,43 @@ from requests import post
 
 from ..config import config
 from ..helper.api_key import load_api_key
+from ..helper.error_messages import error_messages
 from ..helper.files import write
-from ..model.task import markdown_to_task, Place, Task, task_to_json
+from ..model.task import markdown_to_task, MissingDataError, Place, Task, \
+    task_to_json
+
+
+class ServerError(Exception):
+    pass
 
 
 @command()
 @argument("file_path", default="task.md")
-def solve(file_path: str):
-    """Solve the task from the task description
+def solve(file_path: str = "task.md"):
+    """Solve a programming task given a task description
 
-    args:
-        file_path(str): Path to task file
+    \b
+    Args:
+        file_path(str): Path to task file. Default: "task.md".
     """
     try_again = True
     while try_again:
-        task = markdown_to_task(file_path)
-
-        echo('Solving task "' + file_path + '"...')
-        changes = send_request_to_solve(task)
-
-        display_changes(task.places_to_change, changes)
+        task = None
+        changes = None
+        try:
+            task = markdown_to_task(file_path)
+            echo('Solving task "' + file_path + '"...')
+            changes = send_request_to_solve(task)
+            display_changes(task.places_to_change, changes)
+        except (FileNotFoundError, MissingDataError, ServerError) as error:
+            echo(error_messages[str(error)])
 
         try_again = ask("Try again?")
         if try_again:
             continue
+
+        if not changes:
+            return
 
         apply = ask("Apply changes?")
         if not apply:
@@ -51,6 +65,10 @@ def send_request_to_solve(task: Task) -> List[Place]:
         json=task_to_json(task),
         headers={"X-API-KEY": api_key}
     )
+    if response.status_code == 404:
+        raise ServerError("Server not found")
+    if response.status_code != 200:
+        raise ServerError(response.json()['error'])
     changes = response.json()
     for key, change in enumerate(changes):
         changes[key] = Place(**change)
@@ -62,25 +80,28 @@ def display_changes(places_to_change: List[Place], changes: List[Place]):
     for place, change in zip(places_to_change, changes):
         if place.code != change.code:
             any_changes = True
-        differences = unified_diff(
+        difference = unified_diff(
             place.code.splitlines(),
             change.code.splitlines(),
             fromfile=place.file_path,
             tofile=change.file_path
         )
-        for line in differences:
+        for line in difference:
             echo(line)
     if not any_changes:
         echo("Acoder hasn't produced any change in the files.")
 
 
 def ask(prompt_: str):
-    return prompt(prompt_ + " (y/n)").lower() == "y"
+    answer = prompt(prompt_ + " (y/n)").lower() == "y"
+    echo("")
+    return answer
 
 
 def apply_changes(old: List[Place], new: List[Place]):
     for old_place, new_place in zip(old, new):
         if new_place.code == "":
-            remove(new_place.file_path)
+            if exists(new_place.file_path):
+                remove(new_place.file_path)
             continue
         write(new_place.file_path, new_place.code)

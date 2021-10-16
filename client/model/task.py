@@ -21,12 +21,16 @@ class Task:
     places_to_look: List[Place]
 
 
+class MissingDataError(Exception):
+    pass
+
+
 def markdown_to_task(file_path: str) -> Task:
     data = load_markdown(file_path)
     if "description" not in data:
-        raise ValueError("Task file does not contain description")
+        raise MissingDataError("Task file missing description")
     if "change" not in data:
-        raise ValueError("Task file does not contain files to change")
+        raise MissingDataError("Task file missing change")
     change_lines = data['change'].splitlines()
     change = [line_to_place(line, True) for line in change_lines]
     look = []
@@ -56,9 +60,7 @@ def retrieve_code(
 ) -> str:
     code = content(file_path, "" if allow_new_files else None)
     if functions:
-        raise NotImplementedError(
-            "Specifying functions feature is not implemented yet"
-        )
+        raise NotImplementedError("Functions not implemented")
     return code
 
 

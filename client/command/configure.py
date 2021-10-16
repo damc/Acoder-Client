@@ -8,6 +8,7 @@ from ..helper.api_key import save_api_key, file_path
 def configure(api_key: str):
     """Provide API key for authentication
 
+    \b
     Args:
         api_key(str): API key for authentication
     """

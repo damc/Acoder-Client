@@ -5,7 +5,7 @@ from os.path import dirname, exists
 def content(file_path: str, not_exist=None) -> str:
     if not exists(file_path):
         if not_exist is None:
-            raise FileNotFoundError(f"File {file_path} does not exist.")
+            raise FileNotFoundError("File not found")
         return not_exist
     with open(file_path, "r") as file:
         return file.read()
