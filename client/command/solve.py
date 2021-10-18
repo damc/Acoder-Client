@@ -4,6 +4,7 @@ from os.path import exists
 from typing import List
 
 from click import argument, command, echo, prompt
+from simplejson.errors import JSONDecodeError
 from requests import post
 
 from ..config import config
@@ -67,19 +68,23 @@ def send_request_to_solve(task: Task) -> List[Place]:
     )
     if response.status_code == 404:
         raise ServerError("Server not found")
+    try:
+        response_body = response.json()
+    except JSONDecodeError:
+        raise ServerError("Unexpected error")
     if response.status_code != 200:
         raise ServerError(response.json()['error'])
-    changes = response.json()
+    changes = response_body
     for key, change in enumerate(changes):
         changes[key] = Place(**change)
     return changes
 
 
 def display_changes(places_to_change: List[Place], changes: List[Place]):
-    any_changes = False
+    if places_to_change == changes:
+        echo("Acoder hasn't produced any change in the files.")
+        return
     for place, change in zip(places_to_change, changes):
-        if place.code != change.code:
-            any_changes = True
         difference = unified_diff(
             place.code.splitlines(),
             change.code.splitlines(),
@@ -88,8 +93,6 @@ def display_changes(places_to_change: List[Place], changes: List[Place]):
         )
         for line in difference:
             echo(line)
-    if not any_changes:
-        echo("Acoder hasn't produced any change in the files.")
 
 
 def ask(prompt_: str):
