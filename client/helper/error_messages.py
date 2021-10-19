@@ -50,5 +50,13 @@ What you can do now - possible options:
 It might be because you've made a mistake when configuring it, possibly you've accidentally copied only part of the API key instead of the entire API key.
 
 What you can do now - possible options:
-1. Go to the Acoder website. Sign in and go to the "Dashboard" page. Copy the API key and run `acoder configure <you API key here>`."""
+1. Go to the Acoder website. Sign in and go to the "Dashboard" page. Copy the API key and run `acoder configure <you API key here>`.""",
+    'Task file missing description': """The task file is missing the description of the task.
+    
+What you can do now - possible options:
+1. Open the task file and ensure that there is a part like this in it: '## Description'.""",
+    'Task file missing change': """The task file is missing the paths to the files that Acoder needs to change/create.
+
+What you can do now - possible options:
+1. Open the task file and ensure that there is a part like this in it: '## Change'."""
 }
