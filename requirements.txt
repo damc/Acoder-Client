@@ -1,3 +1,5 @@
 requests~=2.22.0
 setuptools~=45.2.0
 click~=8.0.1
+client~=1.0
+simplejson~=3.16.0

@@ -28,10 +28,11 @@ def solve(file_path: str = "task.md"):
     Args:
         file_path(str): Path to task file. Default: "task.md".
     """
+    task = None
+    changes = None
+
     try_again = True
     while try_again:
-        task = None
-        changes = None
         try:
             task = markdown_to_task(file_path)
             echo('Solving task "' + file_path + '"...')
@@ -73,7 +74,7 @@ def send_request_to_solve(task: Task) -> List[Place]:
     except JSONDecodeError:
         raise ServerError("Unexpected error")
     if response.status_code != 200:
-        raise ServerError(response.json()['error'])
+        raise ServerError(response_body['error'])
     changes = response_body
     for key, change in enumerate(changes):
         changes[key] = Place(**change)
