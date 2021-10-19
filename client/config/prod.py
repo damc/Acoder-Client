@@ -1,4 +1,4 @@
 config = {
-    'SOLVE_ENDPOINT': 'http://acoder.herokuapp.com/solve',
+    'SOLVE_ENDPOINT': 'https://acoder.herokuapp.com/solve',
     'LOGGING_LEVEL': None
 }

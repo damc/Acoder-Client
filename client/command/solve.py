@@ -1,14 +1,14 @@
 from difflib import unified_diff
 from os import remove
 from os.path import exists
-from typing import List
+from typing import List, Tuple
 
 from click import argument, command, echo, prompt
 from simplejson.errors import JSONDecodeError
 from requests import post
 
 from ..config import config
-from ..helper.api_key import load_api_key
+from ..helper.api_key import load_api_key, APIKeyMissing
 from ..helper.error_messages import error_messages
 from ..helper.files import write
 from ..model.task import markdown_to_task, MissingDataError, Place, Task, \
@@ -38,7 +38,7 @@ def solve(file_path: str = "task.md"):
             echo('Solving task "' + file_path + '"...')
             changes = send_request_to_solve(task)
             display_changes(task.places_to_change, changes)
-        except (FileNotFoundError, MissingDataError, ServerError) as error:
+        except user_errors() as error:
             echo(error_messages[str(error)])
 
         try_again = ask("Try again?")
@@ -94,6 +94,10 @@ def display_changes(places_to_change: List[Place], changes: List[Place]):
         )
         for line in difference:
             echo(line)
+
+
+def user_errors() -> Tuple:
+    return APIKeyMissing, FileNotFoundError, MissingDataError, ServerError
 
 
 def ask(prompt_: str):

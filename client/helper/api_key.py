@@ -8,10 +8,17 @@ def save_api_key(api_key: str):
     write(file_path(), api_key)
 
 
+class APIKeyMissing(Exception):
+    pass
+
+
 def load_api_key() -> str:
     """Load api key"""
     api_key_file = file_path()
-    return content(api_key_file)
+    try:
+        return content(api_key_file)
+    except FileNotFoundError:
+        raise APIKeyMissing("API key missing")
 
 
 def file_path() -> str:
