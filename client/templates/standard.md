@@ -1,4 +1,6 @@
-# Description
+# [name of the task here]
+
+## Description
 
 [
 Describe the task that you want Acoder to accomplish here.
@@ -7,7 +9,7 @@ Example:
 Change the forms in the HTML template file to use tables instead of divs.
 ]
 
-# Change
+## Change
 
 [
 List all the files that Acoder might need to change in order to accomplish the task here.
@@ -21,7 +23,7 @@ Example:
 /home/damian/Projects/SelfControl/src/Controller/Front/RegistrationController.php
 ]
 
-# Look
+## Look
 
 [
 List all the files that Acoder might need to look at (in other words, the files that it needs to be aware of) in order to accomplish the task here.
