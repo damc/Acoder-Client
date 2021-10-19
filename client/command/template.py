@@ -13,4 +13,4 @@ def template(file_path: str):
         file_path(str): Path to task file
     """
     write(file_path, content("client/templates/standard.md"))
-    echo(f"The template file has been generated in: f{file_path}.")
+    echo(f"The template file has been generated in: {file_path}.")
