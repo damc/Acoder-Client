@@ -1,18 +1,21 @@
+from dataclasses import asdict
 from difflib import unified_diff
+from json import dumps
 from os import remove
 from os.path import exists
+from time import sleep
 from typing import List, Tuple
 
-from click import argument, command, echo, prompt
+from click import argument, command, echo, secho, prompt
+from requests import post, Response
 from simplejson.errors import JSONDecodeError
-from requests import post
 
 from ..config import config
 from ..helper.api_key import load_api_key, APIKeyMissing
 from ..helper.error_messages import error_messages
 from ..helper.files import write
 from ..model.task import markdown_to_task, MissingDataError, Place, Task, \
-    task_to_json
+    json_to_places_list
 
 
 class ServerError(Exception):
@@ -38,11 +41,12 @@ def solve(file_path: str = "task.md"):
             echo('Solving task "' + file_path + '"...')
             changes = send_request_to_solve(task)
             display_changes(task.places_to_change, changes)
-        except user_errors() as error:
+        except handled_errors() as error:
             echo(error_messages[str(error)])
 
         try_again = ask("Try again?")
         if try_again:
+            echo("Let's try again...")
             continue
 
         if not changes:
@@ -53,39 +57,52 @@ def solve(file_path: str = "task.md"):
             continue
         apply_changes(task.places_to_change, changes)
 
-        echo("It's time to test the changes.")
+        echo("You can test the changes now.")
         revert = ask("Revert changes?")
         if revert:
             apply_changes(changes, task.places_to_change)
             try_again = ask("Try again?")
 
 
-def send_request_to_solve(task: Task) -> List[Place]:
-    api_key = load_api_key()
+class ServerTimeoutError(ServerError):
+    pass
+
+
+def send_request_to_solve(task: Task, attempt: int = 1) -> List[Place]:
     response = post(
         config['SOLVE_ENDPOINT'],
-        json=task_to_json(task),
-        headers={"X-API-KEY": api_key}
+        json=dumps({"task": asdict(task), "allow_cached": attempt != 1}),
+        headers={"X-API-KEY": load_api_key()}
     )
+    try:
+        validate_response(response)
+    except ServerTimeoutError:
+        if attempt < 4:
+            echo("Still waiting for the response...")
+            sleep(15)
+            return send_request_to_solve(task, attempt + 1)
+        raise ServerTimeoutError("Timeout")
+    return json_to_places_list(response.json())
+
+
+def validate_response(response: Response):
+    if response.status_code == 503:
+        raise ServerTimeoutError("Timeout")
     if response.status_code == 404:
         raise ServerError("Server not found")
     try:
-        response_body = response.json()
+        body = response.json()
     except JSONDecodeError:
         raise ServerError("Unexpected error")
     if response.status_code != 200:
-        raise ServerError(response_body['error'])
-    changes = response_body
-    for key, change in enumerate(changes):
-        changes[key] = Place(**change)
-    return changes
+        raise ServerError(body['error'])
 
 
 def display_changes(places_to_change: List[Place], changes: List[Place]):
-    if places_to_change == changes:
-        echo("Acoder hasn't produced any change in the files.")
-        return
+    any_change = False
     for place, change in zip(places_to_change, changes):
+        if place.code != change.code:
+            any_change = True
         difference = unified_diff(
             place.code.splitlines(),
             change.code.splitlines(),
@@ -93,10 +110,17 @@ def display_changes(places_to_change: List[Place], changes: List[Place]):
             tofile=change.file_path
         )
         for line in difference:
-            echo(line)
+            if line.startswith("+"):
+                secho(line, fg="green")
+            elif line.startswith("-"):
+                secho(line, fg="red")
+            else:
+                echo(line)
+    if not any_change:
+        echo("Acoder hasn't produced any change in the files.")
 
 
-def user_errors() -> Tuple:
+def handled_errors() -> Tuple:
     return APIKeyMissing, FileNotFoundError, MissingDataError, ServerError
 
 

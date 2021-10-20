@@ -16,6 +16,9 @@ if config['LOGGING_LEVEL']:
 def main():
     """Generate code to accomplish a task (using AI).
 
+    The task can be: implementing some feature, changing something in
+    the code, fixing a bug etc.
+
     \b
     Usage:
     1. Sign up on the Acoder website (https://acoder.herokuapp.com).

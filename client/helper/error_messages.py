@@ -58,5 +58,12 @@ What you can do now - possible options:
     'Task file missing change': """The task file is missing the paths to the files that Acoder needs to change/create.
 
 What you can do now - possible options:
-1. Open the task file and ensure that there is a part like this in it: '## Change'."""
+1. Open the task file and ensure that there is a part like this in it: '## Change'.""",
+    'Timeout': """We were waiting and waiting and haven't got any response from Acoder. Perhaps, Acoder is on a lunchbreak right now.
+
+What you can do now - possible options:
+1. Try again now.
+2. Try again later.
+3. Try and make the task simpler so that it takes less time for Acoder to return the response.
+4. Do the task by yourself."""
 }

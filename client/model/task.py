@@ -66,3 +66,9 @@ def retrieve_code(
 
 def task_to_json(task):
     return dumps(asdict(task))
+
+
+def json_to_places_list(changes) -> List[Place]:
+    for key, change in enumerate(changes):
+        changes[key] = Place(**change)
+    return changes
