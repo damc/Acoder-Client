@@ -22,7 +22,7 @@ def main():
     \b
     Usage:
     1. Sign up on the Acoder website (https://acoder.herokuapp.com).
-    2. After signing in, in the "Dashboard", you can see you API key.
+    2. After signing in, in the "Dashboard", you can see your API key.
     3. Run `acoder configure <your API key here>`.
     4. Go to your project directory.
     5. Run `acoder template`. It will generate `task.md` file.

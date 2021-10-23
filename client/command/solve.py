@@ -99,10 +99,11 @@ def validate_response(response: Response):
 
 
 def display_changes(places_to_change: List[Place], changes: List[Place]):
-    any_change = False
+    if places_to_change == changes:
+        echo("Acoder hasn't produced any change in the files.")
+        return
+    long_text = False
     for place, change in zip(places_to_change, changes):
-        if place.code != change.code:
-            any_change = True
         difference = unified_diff(
             place.code.splitlines(),
             change.code.splitlines(),
@@ -116,8 +117,10 @@ def display_changes(places_to_change: List[Place], changes: List[Place]):
                 secho(line, fg="red")
             else:
                 echo(line)
-    if not any_change:
-        echo("Acoder hasn't produced any change in the files.")
+            if "{long_text}" in line:
+                long_text = True
+    if long_text:
+        echo("Part of the output has been filtered out.")
 
 
 def handled_errors() -> Tuple:

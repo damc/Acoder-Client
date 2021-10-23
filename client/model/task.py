@@ -6,14 +6,14 @@ from ..helper.files import content
 from ..helper.markdown import load_markdown
 
 
-@dataclass(eq=False)
+@dataclass
 class Place:
     file_path: str
     functions: Optional[List[str]]
     code: Optional[str]
 
 
-@dataclass(eq=False)
+@dataclass
 class Task:
     title: str
     description: str
