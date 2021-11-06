@@ -5,7 +5,7 @@ What you can do now - possible options:
 1. If you didn't try to generate text and you know what in your task description might have caused this error, then you might try to rephrase the task description so that it doesn't suggest to generate text and then try again.
 2. Do the task by yourself.
 """,
-    'Input too long': """The cummulative length of the files that you have included is too long.
+    'Input too long': """The cumulative length of the files that you have included is too long.
     
 What you can do now - possible options:
 1. Include less files below 'Change' or 'Look'.

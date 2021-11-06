@@ -12,12 +12,12 @@ if config['LOGGING_LEVEL']:
 
 
 @group()
-@version_option("1.0")
+@version_option("1.0.1")
 def main():
     """Generate code to accomplish a task (using AI).
 
-    The task can be: implementing some feature, changing something in
-    the code, fixing a bug etc.
+    The task can be: implementing some small feature, changing
+    something in the code, fixing a small bug etc.
 
     \b
     Usage:

@@ -3,3 +3,4 @@ setuptools~=45.2.0
 click~=8.0.1
 client~=1.0
 simplejson~=3.16.0
+appdirs~=1.4.4
