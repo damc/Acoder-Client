@@ -1,4 +1,5 @@
 from click import command, argument, echo
+from os.path import join
 
 from ..config import config
 from ..helper.files import content, write
@@ -13,6 +14,7 @@ def template(file_path: str):
     Args:
         file_path(str): Path to task file
     """
-    content_ = content(config['BASE_PATH'] + "client/templates/standard.md")
+    path = join(config['BASE_PATH'], "client/templates/standard.md")
+    content_ = content(path)
     write(file_path, content_)
     echo(f"The template file has been generated in: {file_path}.")

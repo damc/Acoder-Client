@@ -1,4 +1,4 @@
-from os import environ
+from appdirs import user_data_dir
 
 from .files import write, content
 
@@ -21,7 +21,9 @@ def load_api_key() -> str:
         raise APIKeyMissing("API key missing")
 
 
+APP_NAME = APP_AUTHOR = 'Acoder'
+
+
 def file_path() -> str:
     """Get API Key file path"""
-    home_directory = environ['HOME']
-    return f"{home_directory}/.acoder/api_key"
+    return f"{user_data_dir(APP_NAME, APP_AUTHOR)}/api_key"

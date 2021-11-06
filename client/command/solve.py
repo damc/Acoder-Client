@@ -76,12 +76,12 @@ def send_request_to_solve(task: Task, attempt: int = 1) -> List[Place]:
     )
     try:
         validate_response(response)
-    except ServerTimeoutError:
+    except ServerTimeoutError as error:
         if attempt < 4:
             echo("Still waiting for the response...")
             sleep(15)
             return send_request_to_solve(task, attempt + 1)
-        raise ServerTimeoutError("Timeout")
+        raise error
     return json_to_places_list(response.json())
 
 
