@@ -1,0 +1,1 @@
+The code in this folder/repository is a property of Damian Czapiewski and can be used only with Damian Czapiewski's permission and knowledge and in a way that has been permitted by Damian Czapiewski.
