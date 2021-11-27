@@ -1,6 +1,6 @@
 # Acoder client
 
-Acoder is an application that generates code using AI. It can accomplish small programming tasks. This is only the client part of the application. The actual task solving happens on the server (the application sends a request to the server) and the server sends a request to OpenAI server in order to solve the task.
+Acoder is an application that generates code using AI. It can accomplish small programming tasks. This is only the client part of the application. The actual task solving happens on the server (the application sends a request to the server) and the server construct a prompt (and handles few other things) and sends a request to the OpenAI server in order to solve the task.
 
 ## Development environment
 
